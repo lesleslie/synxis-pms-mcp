@@ -1,10 +1,27 @@
 [project]
 name = "synxis-pms-mcp"
 version = "0.1.1"
-description = "MCP server for Synxis Property Management System integration"
+description = "MCP server for SynXis PMS (Property Management System) API"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "fastmcp>=2.12.3",
+    "mcp-common>=0.4.8",
+    "oneiric>=0.3.6",
+    "httpx>=0.28.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.0.0",
+    "rich>=13.0.0",
+    "typer>=0.15.0",
+]
+
+[project.scripts]
+synxis-pms-mcp = "synxis_pms_mcp.cli:main"
+
+[tool.synxis-pms-mcp]
+http_port = 3047
+http_host = "127.0.0.1"
+enable_http_transport = false
 
 [dependency-groups]
 dev = [
@@ -31,38 +48,23 @@ ignore = ["E501", "B008"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_functions = ["test_*"]
-python_classes = ["Test*"]
+python_files = ["test_*.py"]
 addopts = [
-    "--cov=.",
+    "--cov=synxis_pms_mcp",
     "--cov-report=term-missing:skip-covered",
-    "--cov-report=html",
-    "--cov-fail-under=0",  # Start at 0%, increase as code is added
     "-v",
 ]
 asyncio_mode = "auto"
 markers = [
     "unit: Unit tests",
     "integration: Integration tests",
-    "slow: Slow-running tests",
-    "network: Tests requiring network access",
+    "mock: Tests using mock mode",
 ]
 
 [tool.coverage.run]
-source = ["."]
-omit = [
-    "*/tests/*",
-    "*/test_*.py",
-    "*/__pycache__/*",
-    "*/site-packages/*",
-    "*/venv/*",
-    "*/.venv/*",
-]
+source = ["synxis_pms_mcp"]
+omit = ["*/tests/*"]
 
 [tool.bandit]
-exclude_dirs = [
-    "/tests",
-    "/test_*.py",
-]
+exclude_dirs = ["/tests"]
 skips = ["B101"]

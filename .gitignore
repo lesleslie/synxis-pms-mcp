@@ -1,36 +1,259 @@
-# Python-generated files
+# ============================================================================
+# Python - Generated Files
+# ============================================================================
 __pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
-.pytest_cache/
-.coverage
-htmlcov/
-*.cover
+*.py[cod]
+*$py.class
+*.so
 
-# Virtual environments
+# ============================================================================
+# Python - C Extensions
+# ============================================================================
+*.pyc
+*.pyo
+
+# ============================================================================
+# Backup Files
+# ============================================================================
+*.backup
+*.bak
+
+# ============================================================================
+# Python - Distribution / Packaging
+# ============================================================================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+*.egg-info
+installed.cfg
+*.egg
+MANIFEST
+*.spec
+*.whl
+
+# ============================================================================
+# Python - Unit Test / Coverage Reports
+# ============================================================================
+htmlcov/
+tox/
+.nox/
+coverage/
+.coverage
+nosetests.xml
+coverage.xml
+coverage.json
+coverage.xml
+coverage.json
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# ============================================================================
+# Translations
+# ============================================================================
+*.mo
+*.pot
+
+# ============================================================================
+# Python - Environments
+# ============================================================================
+.env
 .venv
 venv/
-ENV/
 env/
+venv/
+ENV/
+ENV/
+env.bak/
+venv.bak/
 
-# IDE
-.vscode/
+# ============================================================================
+# Python - Type Checking & Linting
+# ============================================================================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+.pyre/
+.pytype/
+.pytype/
+
+# ============================================================================
+# Python - Package Management
+# ============================================================================
+.pdm-python/
+.pdm.toml
+.pyscn/
+.uv/
+.uv-cache/
+
+# ============================================================================
+# IDEs
+# ============================================================================
 .idea/
+.vscode/
 *.swp
 *.swo
 *~
 
+# ============================================================================
+# Logs
+# ============================================================================
+*.log
+logs/
+
+# ============================================================================
 # OS
+# ============================================================================
 .DS_Store
 Thumbs.db
 
-# Environment
-.env
-.env.local
-*.envrc
+# ============================================================================
+# Local Configuration
+# ============================================================================
+settings/local.yaml
+settings/repos.yaml
+settings/ecosystem.yaml
+.envrc.local
 
-# Logs
-*.log
+# ============================================================================
+# Sensitive Configuration Files
+# ============================================================================
+config.yaml
+oneiric.yaml
+
+# ============================================================================
+# Crackerjack
+# ============================================================================
+.crackerjack/
+*.crackerjack.bak
+crackerjack-debug-*.log
+crackerjack-ai-debug-*.log
+# Old distribution directories (should not be in repo)
+crackerjack-*/
+
+# ============================================================================
+# Skyros Cache (mcp-common runtime cache)
+# ============================================================================
+.skylos/
+
+# ============================================================================
+# Build/Distribution
+# ============================================================================
+# Caches
+# Coverage
+# Crackerjack specific
+# Development
+# Temporary and working files
+
+# ============================================================================
+# Test/Benchmarks
+# ============================================================================
+.benchmarks/
+/tests/.benchmarks/
+
+# ============================================================================
+# Crackerjack Patterns
+# ============================================================================
+
+# ============================================================================
+# Adapter Output Files (centralized in .crackerjack/outputs/)
+# ============================================================================
+# Note: Individual adapters may create timestamped results
+.crackerjack/outputs/
+
+# ============================================================================
+# Development Artifacts (evaluate periodically)
+# ============================================================================
+# Implementation markdown files
+feature-implementation-*.md
+test-implementation-*.md
+
+# Session handoff documentation
+session_handoff_*.md
+
+# ============================================================================
+# Tool Caches and Databases
+# ============================================================================
+
+# ============================================================================
+# Configuration Files (project-specific)
+# ============================================================================
+.mcp.json
+
+# Claude Code Settings
+.claude/
+**/.claude/settings.local.json
+
+# Crackerjack State
+.crackerjack-state/
+.crackerjack-hooks-updated/
+.crackerjack-mcp/
+# Legacy .crackerjack/ directory (deprecated)
+.crackerjack/
+
+# ============================================================================
+# Archived Documentation (excluded from quality checks)
+# ============================================================================
+docs/archive/
+
+# ============================================================================
+# Archived Files
+# ============================================================================
+.archive/
+
+# ============================================================================
+# Complexipy Results (temporary complexity analysis output)
+# ============================================================================
+complexipy_results*.json
+
+# Complexipy cache (added to prevent tracking cache files)
+.complexipy_cache/
+
+# ============================================================================
+# Lychee link checker
+# ============================================================================
+.lycheeignore
+
+# ============================================================================
+# Obsidian (excluded from git - user note directory)
+# ============================================================================
+.obsidian/
+.obsidian/
+
+# XDG - Cache directories
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.oneiric_cache/
+.complexipy_cache/
+.cache/
+.cache/lychee/
+
+# XDG - State directories
+.claude/
+.session-buddy/
+.crackerjack/
+
+# XDG - DELETE candidates
+.obsidian/
+
+/.oneiric_cache/
+/.archive/
+/.backups/
+/.archive/
+/archive/
+settings.local.json
+
+# Database files
+*.db

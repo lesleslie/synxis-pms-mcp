@@ -1,0 +1,22 @@
+# SynXis PMS MCP Server Configuration
+
+server_name: "synxis-pms-mcp"
+server_description: "MCP server for SynXis Property Management System"
+
+# API Configuration
+base_url: "https://api.synxis.com/pms/v1"
+property_id: ""
+timeout: 30.0
+max_retries: 3
+
+# Mock Mode
+mock_mode: false
+
+# HTTP Transport
+enable_http_transport: true
+http_host: "127.0.0.1"
+http_port: 3047
+
+# Logging
+log_level: "INFO"
+log_json: true

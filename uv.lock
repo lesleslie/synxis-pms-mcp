@@ -1872,7 +1872,7 @@ wheels = [
 
 [[package]]
 name = "mcp"
-version = "1.25.0"
+version = "1.26.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -1890,14 +1890,14 @@ dependencies = [
     { name = "typing-inspection" },
     { name = "uvicorn", marker = "sys_platform != 'emscripten'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d5/2d/649d80a0ecf6a1f82632ca44bec21c0461a9d9fc8934d38cb5b319f2db5e/mcp-1.25.0.tar.gz", hash = "sha256:56310361ebf0364e2d438e5b45f7668cbb124e158bb358333cd06e49e83a6802", size = 605387, upload-time = "2025-12-19T10:19:56.985Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/6d/62e76bbb8144d6ed86e202b5edd8a4cb631e7c8130f3f4893c3f90262b10/mcp-1.26.0.tar.gz", hash = "sha256:db6e2ef491eecc1a0d93711a76f28dec2e05999f93afd48795da1c1137142c66", size = 608005, upload-time = "2026-01-24T19:40:32.468Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e2/fc/6dc7659c2ae5ddf280477011f4213a74f806862856b796ef08f028e664bf/mcp-1.25.0-py3-none-any.whl", hash = "sha256:b37c38144a666add0862614cc79ec276e97d72aa8ca26d622818d4e278b9721a", size = 233076, upload-time = "2025-12-19T10:19:55.416Z" },
+    { url = "https://files.pythonhosted.org/packages/fd/d9/eaa1f80170d2b7c5ba23f3b59f766f3a0bb41155fbc32a69adfa1adaaef9/mcp-1.26.0-py3-none-any.whl", hash = "sha256:904a21c33c25aa98ddbeb47273033c435e595bbacfdb177f4bd87f6dceebe1ca", size = 233615, upload-time = "2026-01-24T19:40:30.652Z" },
 ]
 
 [[package]]
 name = "mcp-common"
-version = "0.5.0"
+version = "0.5.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "oneiric" },
@@ -1907,9 +1907,9 @@ dependencies = [
     { name = "rich" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cc/3d/36273c5bdacf05b07cca7f6abff29ae593e8967799c9dd5513da4d760a6a/mcp_common-0.5.0.tar.gz", hash = "sha256:da24a11dda8fac60d872dc30f7f9cc53fd5b19248ad871bc012d4fe4b2cd6bf1", size = 573925, upload-time = "2026-01-24T09:53:39.59Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cc/c6/ef929a7f49daf7f5a65af5d28564686227079a6e07c896330b184856633e/mcp_common-0.5.1.tar.gz", hash = "sha256:012cdb21f9c818c490bca8039d9fdae3c3308b4d2e16914f8c824a24e07501a4", size = 573765, upload-time = "2026-01-24T13:42:52.366Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c0/f5/1b40afc597d4766301ee869d38afd92bb2b1126c13748a964d82afc05672/mcp_common-0.5.0-py3-none-any.whl", hash = "sha256:7a93d21a707949490161ba69172aeec97d63e1f79c4b97abdecd08f1aa5252d8", size = 274625, upload-time = "2026-01-24T09:53:37.53Z" },
+    { url = "https://files.pythonhosted.org/packages/f1/bc/fc6af53cbbb6e024fb25732506108fe4b023724d5aacec9105f918ad1e42/mcp_common-0.5.1-py3-none-any.whl", hash = "sha256:f7943708237bbc1a75f2dba28cfc8f4ef07d466b8c9b9fbbcbef843d9c6a1faf", size = 274604, upload-time = "2026-01-24T13:42:50.432Z" },
 ]
 
 [[package]]
@@ -3834,8 +3834,19 @@ wheels = [
 
 [[package]]
 name = "synxis-pms-mcp"
-version = "0.1.0"
-source = { virtual = "." }
+version = "0.1.1"
+source = { editable = "." }
+dependencies = [
+    { name = "fastmcp" },
+    { name = "httpx" },
+    { name = "mcp-common" },
+    { name = "oneiric" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "rich" },
+    { name = "typer" },
+    { name = "uvicorn" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -3850,6 +3861,17 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [
+    { name = "fastmcp", specifier = ">=2.12.3" },
+    { name = "httpx", specifier = ">=0.28.0" },
+    { name = "mcp-common", specifier = ">=0.4.8" },
+    { name = "oneiric", specifier = ">=0.3.6" },
+    { name = "pydantic", specifier = ">=2.10.0" },
+    { name = "pydantic-settings", specifier = ">=2.0.0" },
+    { name = "rich", specifier = ">=13.0.0" },
+    { name = "typer", specifier = ">=0.15.0" },
+    { name = "uvicorn", specifier = ">=0.30.0" },
+]
 
 [package.metadata.requires-dev]
 dev = [
@@ -4320,11 +4342,11 @@ wheels = [
 
 [[package]]
 name = "wcwidth"
-version = "0.3.2"
+version = "0.3.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/05/07/0b5bcc9812b1b2fd331cc88289ef4d47d428afdbbf0216bb7d53942d93d6/wcwidth-0.3.2.tar.gz", hash = "sha256:d469b3059dab6b1077def5923ed0a8bf5738bd4a1a87f686d5e2de455354c4ad", size = 233633, upload-time = "2026-01-23T21:08:52.451Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/3a/c63d2afd6dc2cad55a44bea48c7db75edde859e320bdceb9351ba63fceb6/wcwidth-0.3.3.tar.gz", hash = "sha256:f8f7d42c8a067d909b80b425342d02c423c5edc546347475e1d402fe3d35bb63", size = 233784, upload-time = "2026-01-24T16:23:58.578Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/72/c6/1452e716c5af065c018f75d42ca97517a04ac6aae4133722e0424649a07c/wcwidth-0.3.2-py3-none-any.whl", hash = "sha256:817abc6a89e47242a349b5d100cbd244301690d6d8d2ec6335f26fe6640a6315", size = 86280, upload-time = "2026-01-23T21:08:51.362Z" },
+    { url = "https://files.pythonhosted.org/packages/4f/bc/ab575ebf0254577034d23908299b0d13ea5d7ceb35f43a5c08acf2252826/wcwidth-0.3.3-py3-none-any.whl", hash = "sha256:8e9056c446f21c7393514946d143a748c56aad72476844d3f215f7915276508f", size = 86509, upload-time = "2026-01-24T16:23:56.966Z" },
 ]
 
 [[package]]

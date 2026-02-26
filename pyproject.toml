@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "synxis-pms-mcp"
 version = "0.1.1"
-description = "MCP server for SynXis PMS (Property Management System) API"
+description = "Unofficial MCP server for SynXis PMS (Property Management System) API"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

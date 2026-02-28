@@ -34,6 +34,7 @@ class SynXisPMSClient:
     def __init__(self, settings: SynXisPMSSettings | None = None) -> None:
         self.settings = settings or get_settings()
         self._client: httpx.AsyncClient | None = None
+        self._access_token: str | None = None
 
     async def __aenter__(self) -> "SynXisPMSClient":
         if not self.settings.mock_mode:
@@ -53,6 +54,120 @@ class SynXisPMSClient:
         if self._client is not None:
             await self._client.aclose()
             self._client = None
+
+    async def _get_access_token(self) -> str:
+        """Get OAuth2 access token using client credentials flow."""
+        if self._access_token:
+            return self._access_token
+
+        if self.settings.mock_mode:
+            self._access_token = "mock_access_token_12345"
+            return self._access_token
+
+        if not self.settings.has_credentials():
+            raise SynXisPMSError(
+                message="OAuth2 credentials not configured. Set SYNXIS_PMS_CLIENT_ID and SYNXIS_PMS_CLIENT_SECRET.",
+                status=401,
+            )
+
+        client = await self._ensure_client()
+        token_url = f"{self.settings.base_url.rsplit('/pms', 1)[0]}/oauth/token"
+
+        try:
+            response = await client.post(
+                token_url,
+                data={
+                    "grant_type": "client_credentials",
+                    "client_id": self.settings.client_id,
+                    "client_secret": self.settings.client_secret,
+                    "scope": "pms:read pms:write",
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+
+            if response.status_code == 401:
+                raise SynXisPMSError(message="Invalid OAuth2 credentials", status=401)
+
+            response.raise_for_status()
+            token_data = response.json()
+            self._access_token = token_data.get("access_token")
+
+            if not self._access_token:
+                raise SynXisPMSError(message="No access token in OAuth2 response", status=500)
+
+            logger.info("OAuth2 token obtained successfully")
+            return self._access_token
+
+        except httpx.HTTPStatusError as e:
+            logger.error("OAuth2 token request failed", status=e.response.status_code)
+            raise SynXisPMSError(
+                message=f"OAuth2 authentication failed: {e.response.text}",
+                status=e.response.status_code,
+            ) from e
+        except httpx.RequestError as e:
+            logger.error("OAuth2 request error", error=str(e))
+            raise SynXisPMSError(message=f"OAuth2 request failed: {e}", status=503) from e
+
+    async def _make_authenticated_request(
+        self,
+        method: str,
+        endpoint: str,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Make an authenticated API request with retry logic."""
+        import asyncio
+
+        client = await self._ensure_client()
+        token = await self._get_access_token()
+
+        headers = kwargs.pop("headers", {})
+        headers["Authorization"] = f"Bearer {token}"
+
+        url = f"{self.settings.base_url}{endpoint}"
+
+        for attempt in range(self.settings.max_retries):
+            try:
+                response = await client.request(method, url, headers=headers, **kwargs)
+
+                # Handle token expiration
+                if response.status_code == 401:
+                    self._access_token = None
+                    token = await self._get_access_token()
+                    headers["Authorization"] = f"Bearer {token}"
+                    response = await client.request(method, url, headers=headers, **kwargs)
+
+                if response.status_code == 404:
+                    return {"data": None, "status": "not_found"}
+
+                response.raise_for_status()
+
+                data = response.json()
+                return {"data": data, "status": "success"}
+
+            except httpx.HTTPStatusError as e:
+                if attempt < self.settings.max_retries - 1:
+                    await asyncio.sleep(2**attempt)
+                    continue
+
+                error_body = {}
+                try:
+                    error_body = e.response.json()
+                except Exception:
+                    error_body = {"message": e.response.text}
+
+                raise SynXisPMSError(
+                    message=error_body.get("message", f"API error: {e.response.status_code}"),
+                    status=e.response.status_code,
+                ) from e
+
+            except httpx.RequestError as e:
+                if attempt < self.settings.max_retries - 1:
+                    await asyncio.sleep(2**attempt)
+                    continue
+
+                raise SynXisPMSError(message=f"Request failed: {e}", status=503) from e
+
+        raise SynXisPMSError(message="Max retries exceeded", status=503)
 
     # =========================================================================
     # Mock Data Generation
@@ -98,9 +213,30 @@ class SynXisPMSClient:
         if self.settings.mock_mode:
             return self._mock_guest(guest_id)
 
-        raise SynXisPMSError(
-            message="Real API not implemented. Use mock_mode=True.",
-            status=501,
+        # Real API implementation
+        result = await self._make_authenticated_request(
+            "GET",
+            f"/guests/{guest_id}",
+            params={"propertyId": self.settings.property_id},
+        )
+
+        data = result.get("data")
+        if not data:
+            return None
+
+        guest_data = data.get("guest", data)
+        return Guest(
+            guest_id=guest_data.get("guestId", guest_id),
+            first_name=guest_data.get("firstName"),
+            last_name=guest_data.get("lastName"),
+            email=guest_data.get("email"),
+            phone=guest_data.get("phone"),
+            address=guest_data.get("address"),
+            city=guest_data.get("city"),
+            country=guest_data.get("country"),
+            loyalty_tier=guest_data.get("loyaltyTier"),
+            vip_status=guest_data.get("vipStatus", False),
+            preferences=guest_data.get("preferences", []),
         )
 
     async def get_room(self, room_id: str) -> Room | None:
@@ -110,9 +246,28 @@ class SynXisPMSClient:
         if self.settings.mock_mode:
             return self._mock_room(room_id)
 
-        raise SynXisPMSError(
-            message="Real API not implemented. Use mock_mode=True.",
-            status=501,
+        # Real API implementation
+        result = await self._make_authenticated_request(
+            "GET",
+            f"/rooms/{room_id}",
+            params={"propertyId": self.settings.property_id},
+        )
+
+        data = result.get("data")
+        if not data:
+            return None
+
+        room_data = data.get("room", data)
+        return Room(
+            room_id=room_data.get("roomId", room_id),
+            room_number=room_data.get("roomNumber"),
+            room_type=room_data.get("roomType"),
+            room_type_name=room_data.get("roomTypeName"),
+            floor=room_data.get("floor"),
+            status=RoomStatus(room_data.get("status", "clean")),
+            features=room_data.get("features", []),
+            max_occupancy=room_data.get("maxOccupancy", 2),
+            current_occupancy=room_data.get("currentOccupancy", 0),
         )
 
     async def get_room_status(self, room_id: str) -> RoomStatus:
@@ -123,10 +278,15 @@ class SynXisPMSClient:
             room = self._mock_room(room_id)
             return room.status
 
-        raise SynXisPMSError(
-            message="Real API not implemented. Use mock_mode=True.",
-            status=501,
+        # Real API implementation
+        result = await self._make_authenticated_request(
+            "GET",
+            f"/rooms/{room_id}/status",
+            params={"propertyId": self.settings.property_id},
         )
+
+        data = result.get("data", {})
+        return RoomStatus(data.get("status", "clean"))
 
     async def list_available_rooms(self) -> list[Room]:
         """List all available rooms."""
@@ -139,10 +299,32 @@ class SynXisPMSClient:
                 if random.random() > 0.3
             ]
 
-        raise SynXisPMSError(
-            message="Real API not implemented. Use mock_mode=True.",
-            status=501,
+        # Real API implementation
+        result = await self._make_authenticated_request(
+            "GET",
+            "/rooms",
+            params={
+                "propertyId": self.settings.property_id,
+                "status": "available",
+            },
         )
+
+        rooms_data = result.get("data", {}).get("rooms", [])
+        rooms = []
+        for room_data in rooms_data:
+            rooms.append(Room(
+                room_id=room_data.get("roomId"),
+                room_number=room_data.get("roomNumber"),
+                room_type=room_data.get("roomType"),
+                room_type_name=room_data.get("roomTypeName"),
+                floor=room_data.get("floor"),
+                status=RoomStatus(room_data.get("status", "clean")),
+                features=room_data.get("features", []),
+                max_occupancy=room_data.get("maxOccupancy", 2),
+                current_occupancy=room_data.get("currentOccupancy", 0),
+            ))
+
+        return rooms
 
     async def check_in(
         self,
@@ -168,9 +350,31 @@ class SynXisPMSClient:
                 message="Welcome! Your room is ready.",
             )
 
-        raise SynXisPMSError(
-            message="Real API not implemented. Use mock_mode=True.",
-            status=501,
+        # Real API implementation
+        result = await self._make_authenticated_request(
+            "POST",
+            f"/reservations/{reservation_id}/checkin",
+            json={
+                "roomId": room_id,
+                "propertyId": self.settings.property_id,
+            },
+        )
+
+        data = result.get("data", {}).get("checkIn", {})
+
+        return CheckInResult(
+            success=data.get("success", True),
+            reservation_id=reservation_id,
+            room_id=room_id,
+            room_number=data.get("roomNumber"),
+            guest_name=data.get("guestName"),
+            check_in_time=(
+                datetime.fromisoformat(data["checkInTime"])
+                if data.get("checkInTime")
+                else datetime.now()
+            ),
+            key_cards_issued=data.get("keyCardsIssued", 2),
+            message=data.get("message", "Check-in successful"),
         )
 
     async def check_out(self, reservation_id: str) -> CheckOutResult:
@@ -193,9 +397,30 @@ class SynXisPMSClient:
                 invoice_number=f"INV-{random.randint(10000, 99999)}",
             )
 
-        raise SynXisPMSError(
-            message="Real API not implemented. Use mock_mode=True.",
-            status=501,
+        # Real API implementation
+        result = await self._make_authenticated_request(
+            "POST",
+            f"/reservations/{reservation_id}/checkout",
+            json={"propertyId": self.settings.property_id},
+        )
+
+        data = result.get("data", {}).get("checkOut", {})
+
+        return CheckOutResult(
+            success=data.get("success", True),
+            reservation_id=reservation_id,
+            room_id=data.get("roomId"),
+            room_number=data.get("roomNumber"),
+            guest_name=data.get("guestName"),
+            check_out_time=(
+                datetime.fromisoformat(data["checkOutTime"])
+                if data.get("checkOutTime")
+                else datetime.now()
+            ),
+            total_charges=data.get("totalCharges"),
+            payments_received=data.get("paymentsReceived"),
+            balance_due=data.get("balanceDue"),
+            invoice_number=data.get("invoiceNumber"),
         )
 
     async def get_folio(self, reservation_id: str) -> Folio:
@@ -238,9 +463,54 @@ class SynXisPMSClient:
                 balance=round(total_charges - total_payments, 2),
             )
 
-        raise SynXisPMSError(
-            message="Real API not implemented. Use mock_mode=True.",
-            status=501,
+        # Real API implementation
+        result = await self._make_authenticated_request(
+            "GET",
+            f"/reservations/{reservation_id}/folio",
+            params={"propertyId": self.settings.property_id},
+        )
+
+        data = result.get("data", {}).get("folio", {})
+
+        charges = []
+        for charge_data in data.get("charges", []):
+            charges.append(Charge(
+                charge_id=charge_data.get("chargeId"),
+                reservation_id=reservation_id,
+                description=charge_data.get("description"),
+                amount=charge_data.get("amount"),
+                category=charge_data.get("category"),
+                posted_at=(
+                    datetime.fromisoformat(charge_data["postedAt"])
+                    if charge_data.get("postedAt")
+                    else datetime.now()
+                ),
+            ))
+
+        payments = []
+        for payment_data in data.get("payments", []):
+            payments.append(Payment(
+                payment_id=payment_data.get("paymentId"),
+                reservation_id=reservation_id,
+                amount=payment_data.get("amount"),
+                method=PaymentMethod(payment_data.get("method", "credit_card")),
+                processed_at=(
+                    datetime.fromisoformat(payment_data["processedAt"])
+                    if payment_data.get("processedAt")
+                    else datetime.now()
+                ),
+            ))
+
+        return Folio(
+            folio_id=data.get("folioId"),
+            reservation_id=reservation_id,
+            guest_name=data.get("guestName"),
+            room_number=data.get("roomNumber"),
+            charges=charges,
+            payments=payments,
+            total_charges=data.get("totalCharges"),
+            total_payments=data.get("totalPayments"),
+            balance=data.get("balance"),
         )
 
 

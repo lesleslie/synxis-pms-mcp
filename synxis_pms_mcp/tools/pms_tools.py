@@ -12,11 +12,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from synxis_pms_mcp.client import SynXisPMSClient
 from synxis_pms_mcp.config import get_logger_instance
-from synxis_pms_mcp.models import CheckInResult, CheckOutResult, Folio, Guest, Room
+from synxis_pms_mcp.models import Guest, Room
 
 if TYPE_CHECKING:
     from fastmcp import FastMCP
@@ -61,7 +61,7 @@ def _room_to_dict(room: Room) -> dict[str, Any]:
     }
 
 
-def register_pms_tools(app: "FastMCP", client: SynXisPMSClient) -> None:
+def register_pms_tools(app: FastMCP, client: SynXisPMSClient) -> None:
     """Register PMS management tools."""
 
     @app.tool()

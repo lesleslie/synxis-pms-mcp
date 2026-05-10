@@ -32,6 +32,24 @@ def create_app() -> FastMCP:
     )
 
     app = FastMCP(name=APP_NAME, version=APP_VERSION)
+
+    # HTTP health endpoint for Claude Code compatibility
+    @app.custom_route("/health", methods=["GET"])
+    async def health_check(request: Any) -> Any:
+        """HTTP health check endpoint for Claude Code `mcp list` compatibility."""
+        from starlette.responses import JSONResponse
+
+        return JSONResponse(
+            {"status": "ok", "service": "synxis-pms", "version": APP_VERSION}
+        )
+
+    @app.custom_route("/healthz", methods=["GET"])
+    async def healthz_check(request: Any) -> Any:
+        """Kubernetes-style health check endpoint."""
+        from starlette.responses import JSONResponse
+
+        return JSONResponse({"status": "ok"})
+
     client = SynXisPMSClient(settings)
     register_pms_tools(app, client)
 

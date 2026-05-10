@@ -11,12 +11,11 @@ import warnings
 os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 warnings.filterwarnings("ignore", message=".*PyTorch.*TensorFlow.*Flax.*")
 
-import uvicorn
+import uvicorn  # noqa: E402
+from mcp_common import MCPServerCLIFactory, MCPServerSettings  # noqa: E402
+from mcp_common.cli.health import RuntimeHealthSnapshot  # noqa: E402
 
-from mcp_common import MCPServerCLIFactory, MCPServerSettings
-from mcp_common.cli.health import RuntimeHealthSnapshot
-
-from synxis_pms_mcp import __version__
+from synxis_pms_mcp import __version__  # noqa: E402
 
 
 class SynXisPMSSettings(MCPServerSettings):

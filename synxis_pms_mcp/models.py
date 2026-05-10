@@ -12,13 +12,13 @@ API Documentation: https://developer.synxis.com/
 from __future__ import annotations
 
 from datetime import date, datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class RoomStatus(str, Enum):
+class RoomStatus(StrEnum):
     """Room status values."""
 
     AVAILABLE = "AVAILABLE"
@@ -29,7 +29,7 @@ class RoomStatus(str, Enum):
     CLEANING = "CLEANING"
 
 
-class GuestStatus(str, Enum):
+class GuestStatus(StrEnum):
     """Guest status values."""
 
     RESERVATION = "RESERVATION"
@@ -39,7 +39,7 @@ class GuestStatus(str, Enum):
     NO_SHOW = "NO_SHOW"
 
 
-class PaymentMethod(str, Enum):
+class PaymentMethod(StrEnum):
     """Payment method types."""
 
     CREDIT_CARD = "CREDIT_CARD"

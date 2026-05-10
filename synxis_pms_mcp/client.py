@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import random
-import uuid
-from datetime import date, datetime
+from datetime import datetime
 from typing import Any
 
 import httpx
@@ -16,11 +15,9 @@ from .models import (
     CheckOutResult,
     Folio,
     Guest,
-    GuestStatus,
     Payment,
     PaymentMethod,
     Room,
-    RoomAssignment,
     RoomStatus,
     SynXisPMSError,
 )
@@ -36,7 +33,7 @@ class SynXisPMSClient:
         self._client: httpx.AsyncClient | None = None
         self._access_token: str | None = None
 
-    async def __aenter__(self) -> "SynXisPMSClient":
+    async def __aenter__(self) -> SynXisPMSClient:
         if not self.settings.mock_mode:
             await self._ensure_client()
         return self
@@ -93,7 +90,9 @@ class SynXisPMSClient:
             self._access_token = token_data.get("access_token")
 
             if not self._access_token:
-                raise SynXisPMSError(message="No access token in OAuth2 response", status=500)
+                raise SynXisPMSError(
+                    message="No access token in OAuth2 response", status=500
+                )
 
             logger.info("OAuth2 token obtained successfully")
             return self._access_token
@@ -106,7 +105,9 @@ class SynXisPMSClient:
             ) from e
         except httpx.RequestError as e:
             logger.error("OAuth2 request error", error=str(e))
-            raise SynXisPMSError(message=f"OAuth2 request failed: {e}", status=503) from e
+            raise SynXisPMSError(
+                message=f"OAuth2 request failed: {e}", status=503
+            ) from e
 
     async def _make_authenticated_request(
         self,
@@ -134,7 +135,9 @@ class SynXisPMSClient:
                     self._access_token = None
                     token = await self._get_access_token()
                     headers["Authorization"] = f"Bearer {token}"
-                    response = await client.request(method, url, headers=headers, **kwargs)
+                    response = await client.request(
+                        method, url, headers=headers, **kwargs
+                    )
 
                 if response.status_code == 404:
                     return {"data": None, "status": "not_found"}
@@ -156,7 +159,9 @@ class SynXisPMSClient:
                     error_body = {"message": e.response.text}
 
                 raise SynXisPMSError(
-                    message=error_body.get("message", f"API error: {e.response.status_code}"),
+                    message=error_body.get(
+                        "message", f"API error: {e.response.status_code}"
+                    ),
                     status=e.response.status_code,
                 ) from e
 
@@ -208,7 +213,9 @@ class SynXisPMSClient:
 
     async def get_guest(self, guest_id: str) -> Guest | None:
         """Get guest information."""
-        logger.info("Getting guest", guest_id=guest_id, mock_mode=self.settings.mock_mode)
+        logger.info(
+            "Getting guest", guest_id=guest_id, mock_mode=self.settings.mock_mode
+        )
 
         if self.settings.mock_mode:
             return self._mock_guest(guest_id)
@@ -312,17 +319,19 @@ class SynXisPMSClient:
         rooms_data = result.get("data", {}).get("rooms", [])
         rooms = []
         for room_data in rooms_data:
-            rooms.append(Room(
-                room_id=room_data.get("roomId"),
-                room_number=room_data.get("roomNumber"),
-                room_type=room_data.get("roomType"),
-                room_type_name=room_data.get("roomTypeName"),
-                floor=room_data.get("floor"),
-                status=RoomStatus(room_data.get("status", "clean")),
-                features=room_data.get("features", []),
-                max_occupancy=room_data.get("maxOccupancy", 2),
-                current_occupancy=room_data.get("currentOccupancy", 0),
-            ))
+            rooms.append(
+                Room(
+                    room_id=room_data.get("roomId"),
+                    room_number=room_data.get("roomNumber"),
+                    room_type=room_data.get("roomType"),
+                    room_type_name=room_data.get("roomTypeName"),
+                    floor=room_data.get("floor"),
+                    status=RoomStatus(room_data.get("status", "clean")),
+                    features=room_data.get("features", []),
+                    max_occupancy=room_data.get("maxOccupancy", 2),
+                    current_occupancy=room_data.get("currentOccupancy", 0),
+                )
+            )
 
         return rooms
 
@@ -353,14 +362,14 @@ class SynXisPMSClient:
         # Real API implementation
         result = await self._make_authenticated_request(
             "POST",
-            f"/reservations/{reservation_id}/checkin",
+            f"/reservations/{reservation_id}/checking",
             json={
                 "roomId": room_id,
                 "propertyId": self.settings.property_id,
             },
         )
 
-        data = result.get("data", {}).get("checkIn", {})
+        data = result.get("data", {}).get("checking", {})
 
         return CheckInResult(
             success=data.get("success", True),
@@ -474,32 +483,36 @@ class SynXisPMSClient:
 
         charges = []
         for charge_data in data.get("charges", []):
-            charges.append(Charge(
-                charge_id=charge_data.get("chargeId"),
-                reservation_id=reservation_id,
-                description=charge_data.get("description"),
-                amount=charge_data.get("amount"),
-                category=charge_data.get("category"),
-                posted_at=(
-                    datetime.fromisoformat(charge_data["postedAt"])
-                    if charge_data.get("postedAt")
-                    else datetime.now()
-                ),
-            ))
+            charges.append(
+                Charge(
+                    charge_id=charge_data.get("chargeId"),
+                    reservation_id=reservation_id,
+                    description=charge_data.get("description"),
+                    amount=charge_data.get("amount"),
+                    category=charge_data.get("category"),
+                    posted_at=(
+                        datetime.fromisoformat(charge_data["postedAt"])
+                        if charge_data.get("postedAt")
+                        else datetime.now()
+                    ),
+                )
+            )
 
         payments = []
         for payment_data in data.get("payments", []):
-            payments.append(Payment(
-                payment_id=payment_data.get("paymentId"),
-                reservation_id=reservation_id,
-                amount=payment_data.get("amount"),
-                method=PaymentMethod(payment_data.get("method", "credit_card")),
-                processed_at=(
-                    datetime.fromisoformat(payment_data["processedAt"])
-                    if payment_data.get("processedAt")
-                    else datetime.now()
-                ),
-            ))
+            payments.append(
+                Payment(
+                    payment_id=payment_data.get("paymentId"),
+                    reservation_id=reservation_id,
+                    amount=payment_data.get("amount"),
+                    method=PaymentMethod(payment_data.get("method", "credit_card")),
+                    processed_at=(
+                        datetime.fromisoformat(payment_data["processedAt"])
+                        if payment_data.get("processedAt")
+                        else datetime.now()
+                    ),
+                )
+            )
 
         return Folio(
             folio_id=data.get("folioId"),

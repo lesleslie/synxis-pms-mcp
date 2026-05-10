@@ -1,6 +1,12 @@
-# Synxis PMS MCP Server
+# CLAUDE.md
 
-Claude Code guidelines for developing the Synxis Property Management System MCP server.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+For a shorter, tool-neutral bootstrap document, start with `AGENTS.md`.
+
+## Project Overview
+
+This is an MCP (Model Context Protocol) server that integrates with the Synxis Property Management System API, enabling AI assistants to interact with hotel reservation and property management data.
 
 ## Project Overview
 
@@ -46,20 +52,24 @@ This is an MCP (Model Context Protocol) server that integrates with the Synxis P
 The MCP server should provide tools for:
 
 1. **Reservation Management**
+
    - Search reservations by guest name, confirmation number
    - Retrieve reservation details
    - Create/modify/cancel reservations
 
-2. **Property Information**
+1. **Property Information**
+
    - List available properties/hotels
    - Get property details and amenities
    - Check room availability and rates
 
-3. **Guest Services**
+1. **Guest Services**
+
    - Retrieve guest profile information
    - View guest history and preferences
 
-4. **Reporting**
+1. **Reporting**
+
    - Generate occupancy reports
    - Revenue and booking analytics
 

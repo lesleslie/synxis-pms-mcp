@@ -257,3 +257,4 @@ settings.local.json
 
 # Database files
 *.db
+!.cache/.gitkeep

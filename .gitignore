@@ -237,8 +237,8 @@ complexipy_results*.json
 .mypy_cache/
 .oneiric_cache/
 .complexipy_cache/
-.cache/
 .cache/lychee/
+.cache/gitleaks-report.json
 
 # XDG - State directories
 .claude/
@@ -257,4 +257,3 @@ settings.local.json
 
 # Database files
 *.db
-!.cache/.gitkeep

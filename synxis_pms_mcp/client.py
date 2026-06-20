@@ -67,6 +67,11 @@ class SynXisPMSClient:
                 status=401,
             )
 
+        self._access_token = await self._fetch_oauth_token()
+        return self._access_token
+
+    async def _fetch_oauth_token(self) -> str:
+        """Perform the OAuth2 client-credentials token request."""
         client = await self._ensure_client()
         token_url = f"{self.settings.base_url.rsplit('/pms', 1)[0]}/oauth/token"
 
@@ -86,16 +91,16 @@ class SynXisPMSClient:
                 raise SynXisPMSError(message="Invalid OAuth2 credentials", status=401)
 
             response.raise_for_status()
-            token_data = response.json()
-            self._access_token = token_data.get("access_token")
+            token_data: dict[str, Any] = response.json()
+            token: str | None = token_data.get("access_token")
 
-            if not self._access_token:
+            if not token:
                 raise SynXisPMSError(
                     message="No access token in OAuth2 response", status=500
                 )
 
             logger.info("OAuth2 token obtained successfully")
-            return self._access_token
+            return token
 
         except httpx.HTTPStatusError as e:
             logger.error("OAuth2 token request failed", status=e.response.status_code)
@@ -317,21 +322,20 @@ class SynXisPMSClient:
         )
 
         rooms_data = result.get("data", {}).get("rooms", [])
-        rooms = []
-        for room_data in rooms_data:
-            rooms.append(
-                Room(
-                    room_id=room_data.get("roomId"),
-                    room_number=room_data.get("roomNumber"),
-                    room_type=room_data.get("roomType"),
-                    room_type_name=room_data.get("roomTypeName"),
-                    floor=room_data.get("floor"),
-                    status=RoomStatus(room_data.get("status", "clean")),
-                    features=room_data.get("features", []),
-                    max_occupancy=room_data.get("maxOccupancy", 2),
-                    current_occupancy=room_data.get("currentOccupancy", 0),
-                )
+        rooms = [
+            Room(
+                room_id=room_data.get("roomId"),
+                room_number=room_data.get("roomNumber"),
+                room_type=room_data.get("roomType"),
+                room_type_name=room_data.get("roomTypeName"),
+                floor=room_data.get("floor"),
+                status=RoomStatus(room_data.get("status", "clean")),
+                features=room_data.get("features", []),
+                max_occupancy=room_data.get("maxOccupancy", 2),
+                current_occupancy=room_data.get("currentOccupancy", 0),
             )
+            for room_data in rooms_data
+        ]
 
         return rooms
 
@@ -481,38 +485,36 @@ class SynXisPMSClient:
 
         data = result.get("data", {}).get("folio", {})
 
-        charges = []
-        for charge_data in data.get("charges", []):
-            charges.append(
-                Charge(
-                    charge_id=charge_data.get("chargeId"),
-                    reservation_id=reservation_id,
-                    description=charge_data.get("description"),
-                    amount=charge_data.get("amount"),
-                    category=charge_data.get("category"),
-                    posted_at=(
-                        datetime.fromisoformat(charge_data["postedAt"])
-                        if charge_data.get("postedAt")
-                        else datetime.now()
-                    ),
-                )
+        charges = [
+            Charge(
+                charge_id=charge_data.get("chargeId"),
+                reservation_id=reservation_id,
+                description=charge_data.get("description"),
+                amount=charge_data.get("amount"),
+                category=charge_data.get("category"),
+                posted_at=(
+                    datetime.fromisoformat(charge_data["postedAt"])
+                    if charge_data.get("postedAt")
+                    else datetime.now()
+                ),
             )
+            for charge_data in data.get("charges", [])
+        ]
 
-        payments = []
-        for payment_data in data.get("payments", []):
-            payments.append(
-                Payment(
-                    payment_id=payment_data.get("paymentId"),
-                    reservation_id=reservation_id,
-                    amount=payment_data.get("amount"),
-                    method=PaymentMethod(payment_data.get("method", "credit_card")),
-                    processed_at=(
-                        datetime.fromisoformat(payment_data["processedAt"])
-                        if payment_data.get("processedAt")
-                        else datetime.now()
-                    ),
-                )
+        payments = [
+            Payment(
+                payment_id=payment_data.get("paymentId"),
+                reservation_id=reservation_id,
+                amount=payment_data.get("amount"),
+                method=PaymentMethod(payment_data.get("method", "credit_card")),
+                processed_at=(
+                    datetime.fromisoformat(payment_data["processedAt"])
+                    if payment_data.get("processedAt")
+                    else datetime.now()
+                ),
             )
+            for payment_data in data.get("payments", [])
+        ]
 
         return Folio(
             folio_id=data.get("folioId"),

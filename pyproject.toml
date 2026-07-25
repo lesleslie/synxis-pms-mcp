@@ -71,3 +71,6 @@ omit = ["*/tests/*"]
 [tool.bandit]
 exclude_dirs = ["/tests"]
 skips = ["B101"]
+
+[tool.uv.sources]
+mcp-common = { path = "/Users/les/Projects/mcp-common", editable = true }

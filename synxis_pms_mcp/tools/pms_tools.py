@@ -19,7 +19,7 @@ from synxis_pms_mcp.config import get_logger_instance
 from synxis_pms_mcp.models import Guest, Room
 
 if TYPE_CHECKING:
-    from fastmcp import FastMCP
+    from mcp_common.fastmcp import FastMCP
 
 logger = get_logger_instance("synxis-pms-mcp.tools")
 

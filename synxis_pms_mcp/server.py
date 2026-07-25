@@ -5,7 +5,7 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any
 
-from fastmcp import FastMCP
+from mcp_common.fastmcp import FastMCP
 
 from synxis_pms_mcp import __version__
 from synxis_pms_mcp.client import SynXisPMSClient
@@ -31,7 +31,24 @@ def create_app() -> FastMCP:
         mock_mode=settings.mock_mode,
     )
 
-    app = FastMCP(name=APP_NAME, version=APP_VERSION)
+    client = SynXisPMSClient(settings)
+
+    @asynccontextmanager
+    async def app_lifespan(_server: FastMCP) -> AsyncGenerator[None]:
+        """Open/close the SynXis PMS HTTP client around the server's lifetime.
+
+        Plan 7 (FastMCP 3.x) makes ``lifespan=`` a public kwarg on
+        ``FastMCP(...)``. The previous implementation read
+        ``app._mcp_server.lifespan`` (a private attribute) and reassigned
+        it post-construction; FastMCP 3.x silently drops that mutation
+        in some code paths, so we declare the lifespan declaratively.
+        """
+        try:
+            yield
+        finally:
+            await client.close()
+
+    app = FastMCP(name=APP_NAME, version=APP_VERSION, lifespan=app_lifespan)
 
     # HTTP health endpoint for Claude Code compatibility
     @app.custom_route("/health", methods=["GET"])
@@ -50,20 +67,8 @@ def create_app() -> FastMCP:
 
         return JSONResponse({"status": "ok"})
 
-    client = SynXisPMSClient(settings)
     register_pms_tools(app, client)
 
-    original_lifespan = app._mcp_server.lifespan
-
-    @asynccontextmanager
-    async def lifespan(server: Any) -> AsyncGenerator[dict[str, Any]]:
-        async with original_lifespan(server) as state:
-            try:
-                yield state
-            finally:
-                await client.close()
-
-    app._mcp_server.lifespan = lifespan
     return app
 
 

@@ -46,7 +46,7 @@ def health_probe_handler() -> RuntimeHealthSnapshot:
     from synxis_pms_mcp.config import get_settings
 
     settings = get_settings()
-    return RuntimeHealthSnapshot(  # type: ignore
+    return RuntimeHealthSnapshot(
         server_name="synxis-pms-mcp",
         status="healthy",
         version=__version__,

@@ -12,26 +12,17 @@ os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 warnings.filterwarnings("ignore", message=".*PyTorch.*TensorFlow.*Flax.*")
 
 import uvicorn  # noqa: E402
-from mcp_common import MCPServerCLIFactory  # noqa: E402
+from mcp_common import MCPServerCLIFactory, MCPServerSettings  # noqa: E402
 from mcp_common.cli.health import RuntimeHealthSnapshot  # noqa: E402
-from oneiric.core.config import OneiricMCPConfig  # noqa: E402
 
 from synxis_pms_mcp import __version__  # noqa: E402
 
 
-class SynXisPMSSettings(OneiricMCPConfig):
-    """SynXis PMS MCP server settings extending OneiricMCPConfig."""
-
-    server_name: str = "synxis-pms-mcp"
-    http_port: int = 3047
-    startup_timeout: int = 10
-    shutdown_timeout: int = 10
-    force_kill_timeout: int = 5
-
-
 def start_server_handler() -> None:
     """Start handler that launches the SynXis PMS MCP server in HTTP mode."""
-    settings = SynXisPMSSettings()
+    from synxis_pms_mcp.config import get_settings
+
+    settings = get_settings()
     print(f"Starting SynXis PMS MCP server on port {settings.http_port}...")
     uvicorn.run(
         "synxis_pms_mcp.server:http_app",
@@ -47,10 +38,10 @@ def health_probe_handler() -> RuntimeHealthSnapshot:
 
     settings = get_settings()
     return RuntimeHealthSnapshot(
-        server_name="synxis-pms-mcp",
-        status="healthy",
-        version=__version__,
-        extra={
+        lifecycle_state={
+            "server_name": "synxis-pms-mcp",
+            "status": "healthy",
+            "version": __version__,
             "credentials_configured": settings.has_credentials(),
             "mock_mode": settings.mock_mode,
         },
@@ -59,7 +50,7 @@ def health_probe_handler() -> RuntimeHealthSnapshot:
 
 factory = MCPServerCLIFactory(
     server_name="synxis-pms-mcp",
-    settings=SynXisPMSSettings(),
+    settings=MCPServerSettings.load("synxis-pms-mcp"),
     start_handler=start_server_handler,
     health_probe_handler=health_probe_handler,
 )

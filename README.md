@@ -6,9 +6,9 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Python: 3.13+](https://img.shields.io/badge/python-3.13%2B-green)](https://www.python.org/downloads/)
 
-MCP server for SynXis PMS (Property Management System) integration.
+Unofficial MCP server for SynXis PMS (Property Management System) API.
 
-**Version:** 0.1.4
+**Version:** 0.2.0
 **Status:** Internal Bodai integration component
 
 ## Quick Links
@@ -177,7 +177,11 @@ synxis_pms_mcp/
 settings/
   synxis-pms.yaml     # Committed defaults
 tests/
+  __init__.py
   test_example.py
+  unit/
+    test_fastmcp_version.py
+    test_no_direct_fastmcp_imports.py
 ```
 
 ## Development

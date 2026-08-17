@@ -258,3 +258,12 @@ settings.local.json
 
 # Database files
 *.db
+
+# ============================================================================
+# Bodai canonical cleanup patterns (2026-08-17)
+# ============================================================================
+*.bak2
+*.backup.*
+.coverage*
+*.pyd
+example.mcp.json

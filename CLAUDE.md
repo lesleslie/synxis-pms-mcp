@@ -8,10 +8,6 @@ For a shorter, tool-neutral bootstrap document, start with `AGENTS.md`.
 
 This is an MCP (Model Context Protocol) server that integrates with the Synxis Property Management System API, enabling AI assistants to interact with hotel reservation and property management data.
 
-## Project Overview
-
-This is an MCP (Model Context Protocol) server that integrates with the Synxis Property Management System API, enabling AI assistants to interact with hotel reservation and property management data.
-
 ## Development Guidelines
 
 ### Code Quality

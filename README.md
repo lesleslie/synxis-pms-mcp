@@ -8,7 +8,7 @@
 
 Unofficial MCP server for SynXis PMS (Property Management System) API.
 
-**Version:** 0.2.0
+**Version:** 0.2.1
 **Status:** Internal Bodai integration component
 
 ## Quick Links

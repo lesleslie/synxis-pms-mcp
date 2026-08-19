@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from importlib.metadata import version as _importlib_version
 from typing import Any
 
 import httpx
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_PACKAGE_VERSION = _importlib_version("synxis-pms-mcp")
 
 try:
     from oneiric.core.logging import LoggingConfig, configure_logging, get_logger
@@ -79,7 +82,7 @@ class SynXisPMSSettings(BaseSettings):
             "headers": {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "User-Agent": "synxis-pms-mcp/0.1.1",
+                "User-Agent": f"synxis-pms-mcp/{_PACKAGE_VERSION}",
             },
         }
 

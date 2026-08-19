@@ -76,3 +76,17 @@ The MCP server should provide tools for:
 ## Configuration
 
 Server configuration (port, timeouts) should be managed through environment variables and MCP configuration files.
+
+## Tool Profile System
+
+Tools are gated by the `SYNXIS_PMS_TOOL_PROFILE` environment variable:
+
+- `full` (default): All 5 PMS tools (`get_guest`, `get_room_status`, `check_in`, `check_out`, `get_folio`) + `health_check` + `discover_tools`
+- `standard`: Same as `full` (Tier-A trivial — no "core subset" to drop)
+- `minimal`: Only `health_check` + `discover_tools` (for control-plane / health-probe deployments where PMS-bound tools would fail without credentials)
+
+HTTP `/health` and `/healthz` routes are always available regardless of profile.
+
+Profile configuration is in `synxis_pms_mcp/tools/profiles.py`. A `discover_tools(query)` meta-tool is always registered so Claude can find unloaded tools.
+
+The production path uses the async `_apply_tool_profile` helper from `mcp-common` 0.18.0 (NOT the sync wrapper which raises `RuntimeError` in event loops). See `docs/architecture/tool-profile-rationale.md` for the full rationale.

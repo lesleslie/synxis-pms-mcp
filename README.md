@@ -168,15 +168,24 @@ Committed defaults live in `settings/synxis-pms.yaml`. Runtime overrides should 
 
 ```text
 synxis_pms_mcp/
+  __init__.py         # Package marker + version
+  __main__.py         # python -m synxis_pms_mcp entry point
   cli.py              # mcp-common lifecycle CLI
   client.py           # SynXis PMS client boundary
   config.py           # Pydantic settings and logging
   models.py           # Typed PMS domain models
   server.py           # FastMCP application factory
-  tools/pms_tools.py  # Registered MCP tools
+  tools/
+    __init__.py        # Package marker
+    pms_tools.py       # Registered MCP tools
+    profiles.py        # Tool profile gating
 settings/
   synxis-pms.yaml     # Committed defaults
 tests/
+  __init__.py          # Package marker
+  test_example.py      # Smoke fixtures
+  test_version_sync.py # User-Agent / version stamp guard
+  test_doc_drift.py    # Doc-drift CI guard
   __init__.py
   test_example.py
   unit/

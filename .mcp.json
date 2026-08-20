@@ -1,0 +1,6 @@
+{
+  "synxis-pms": {
+    "type": "http",
+    "url": "http://localhost:3047/mcp"
+  }
+}

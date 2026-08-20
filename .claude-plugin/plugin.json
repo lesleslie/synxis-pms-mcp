@@ -1,0 +1,17 @@
+{
+  "author": {
+    "name": "Bodai"
+  },
+  "description": "Bodai plugin for the synxis-pms-mcp property management server.",
+  "keywords": [
+    "bodai",
+    "mcp",
+    "synxis",
+    "pms",
+    "hospitality"
+  ],
+  "mcpServers": "./.mcp.json",
+  "name": "synxis-pms",
+  "schema_version": "1.0.0",
+  "version": "0.1.0"
+}

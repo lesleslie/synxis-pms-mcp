@@ -8,19 +8,19 @@ Tier-A repos in the W4 wave; the first seven were `css-mcp`,
 
 ## Tier-A trivial profile mapping
 
-| Profile   | Tools exposed                                                                                                                |
+| Profile | Tools exposed |
 |-----------|------------------------------------------------------------------------------------------------------------------------------|
-| `MINIMAL`  | `health_check` (MCP) + `discover_tools` (W0 meta). HTTP `/health` + `/healthz` routes always available.                        |
-| `STANDARD` | All 5 `synxis-pms-mcp` tools + `health_check` + `discover_tools` (same as FULL — Tier-A trivial).                            |
-| `FULL`     | All 5 `synxis-pms-mcp` tools + `health_check` + `discover_tools`. Default behavior when no env var is set.                   |
+| `MINIMAL` | `health_check` (MCP) + `discover_tools` (W0 meta). HTTP `/health` + `/healthz` routes always available. |
+| `STANDARD` | All 5 `synxis-pms-mcp` tools + `health_check` + `discover_tools` (same as FULL — Tier-A trivial). |
+| `FULL` | All 5 `synxis-pms-mcp` tools + `health_check` + `discover_tools`. Default behavior when no env var is set. |
 
 The 5 PMS tools (Tier-A trivial — no "core subset" to drop at STANDARD):
 
 1. `get_guest` (pms_tools group)
-2. `get_room_status` (pms_tools group)
-3. `check_in` (pms_tools group)
-4. `check_out` (pms_tools group)
-5. `get_folio` (pms_tools group)
+1. `get_room_status` (pms_tools group)
+1. `check_in` (pms_tools group)
+1. `check_out` (pms_tools group)
+1. `get_folio` (pms_tools group)
 
 ## Why MINIMAL = health-only
 
@@ -113,22 +113,20 @@ backward-compat shim so any pre-W4 test/example still works.
    Always import `FastMCP` from `mcp_common.fastmcp`, not from
    `fastmcp` directly. Includes production files AND tests.
 
-2. **`_lifespan_manager()` is the right entry point** to drive the
+1. **`_lifespan_manager()` is the right entry point** to drive the
    production lifespan for the W4.3 close test. It mirrors what
    FastMCP itself uses in `LowLevelServer.run` and `http.py`.
 
-3. **`_apply_tool_profile` AST guard** uses `ast.Await(value=ast.Call(
-   func=ast.Name(id='apply_<repo>_tool_profile')))`. The keystone
+1. **`_apply_tool_profile` AST guard** uses `ast.Await(value=ast.Call( func=ast.Name(id='apply_<repo>_tool_profile')))`. The keystone
    must NOT count occurrences — it must structurally confirm the
    `await` is present (the W3.2 round-1 lesson).
 
-4. **The 3-arg `register_pms_tools_for_profile(mcp, settings,
-   client)` wrapper pattern** works well for repos with 2-arg legacy
+1. **The 3-arg `register_pms_tools_for_profile(mcp, settings, client)` wrapper pattern** works well for repos with 2-arg legacy
    register fns. The third arg can be `_ = settings` if unused
    (decorator-only purpose: uniform signature for `_GROUP_REGISTRY`
    iteration).
 
-5. **`essential_tool_names={"health_check"}` requires a tool
+1. **`essential_tool_names={"health_check"}` requires a tool
    literally named `health_check`**, NOT `health_check_service` /
    `get_liveness` / etc. (the W0 names from `mcp_common.health`).
    Either define a local `health_check` tool (the W4.6 + W4.7 + W4.8

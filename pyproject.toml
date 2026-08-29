@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "synxis-pms-mcp"
-version = "0.5.0"
+version = "0.5.1"
 description = "Unofficial MCP server for SynXis PMS (Property Management System) API"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -71,9 +71,6 @@ omit = ["*/tests/*"]
 [tool.bandit]
 exclude_dirs = ["/tests"]
 skips = ["B101"]
-
-[tool.uv.sources]
-mcp-common = { path = "/Users/les/Projects/mcp-common", editable = true }
 
 [tool.crackerjack]
 # Baseline configuration (auto-bootstrapped 2026-08-20).

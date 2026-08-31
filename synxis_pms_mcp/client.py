@@ -6,7 +6,7 @@ import random
 from datetime import datetime
 from typing import Any
 
-import httpx
+import httpx2 as httpx
 
 from .config import SynXisPMSSettings, get_logger_instance, get_settings
 from .models import (

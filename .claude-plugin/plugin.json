@@ -1,14 +1,12 @@
 {
   "author": {
-    "name": "Bodai"
+    "name": "Wedgwood Web Works"
   },
-  "description": "Bodai plugin for the synxis-pms-mcp property management server.",
+  "description": "Plugin for the synxis-pms-mcp property management server.",
   "keywords": [
-    "bodai",
     "mcp",
-    "synxis",
-    "pms",
-    "hospitality"
+    "synxis-pms",
+    "property-management"
   ],
   "mcpServers": "./.mcp.json",
   "name": "synxis-pms",

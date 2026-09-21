@@ -9,7 +9,7 @@
 Unofficial MCP server for SynXis PMS (Property Management System) API.
 
 **Version:** 0.2.1
-**Status:** Internal Bodai integration component
+**Status:** Standalone FastMCP server
 
 ## Quick Links
 
@@ -84,7 +84,7 @@ The default HTTP bind is `127.0.0.1:3047`.
 
 ## CLI Commands
 
-The CLI is built with `mcp-common` and provides the standard lifecycle command surface used by Bodai MCP servers.
+The CLI is built with `mcp-common` and provides the standard lifecycle command surface used by FastMCP servers.
 
 ```bash
 uv run synxis-pms-mcp start      # Start the HTTP MCP server
@@ -124,9 +124,9 @@ curl http://127.0.0.1:3047/health
 curl http://127.0.0.1:3047/healthz
 ```
 
-## Installation via Bodai Marketplace
+## Installation via Claude Code marketplace
 
-This repo ships a Bodai Claude Code plugin manifest (`.claude-plugin/plugin.json`) plus a colocated `.mcp.json` and three slash commands in `commands/`. To install via the Bodai marketplace, first register the marketplace with Claude Code, then install the plugin by name (`synxis-pms`). The plugin registers the MCP server over HTTP at `http://localhost:3047/mcp`, so start the server (`uv run synxis-pms-mcp start`) before invoking any command. Once installed, the slash commands `/synxis-pms-property`, `/synxis-pms-room`, and `/synxis-pms-stay` become available alongside the `mcp__synxis-pms__*` tools.
+This repo ships a Claude Code plugin manifest (`.claude-plugin/plugin.json`) plus a colocated `.mcp.json` and three slash commands in `commands/`. To install, register the [www-mcp-servers marketplace](https://github.com/lesleslie/www-mcp-servers) with Claude Code, then install the plugin by name (`synxis-pms`). The plugin registers the MCP server over HTTP at `http://localhost:3047/mcp`, so start the server (`uv run synxis-pms-mcp start`) before invoking any command. Once installed, the slash commands `/synxis-pms-property`, `/synxis-pms-room`, and `/synxis-pms-stay` become available alongside the `mcp__synxis-pms__*` tools.
 
 ## Tool Reference
 

@@ -34,12 +34,6 @@
 - Never commit credentials, tenant identifiers, or customer data.
 - Scrub reservation and guest details from fixtures and troubleshooting logs.
 
-## Bodai integration
-
-When installed alongside the [Bodai ecosystem](https://github.com/lesleslie/bodai),
-`synxis-pms-mcp` follows the shared cross-repo conventions: Crackerjack for CI/CD
-quality gates, the four mcp-common baseline tools (`discover_tools`,
-`get_liveness`, `get_readiness`, `health_check_all`), and the MCP wiring
-discipline documented in `mahavishnu/.claude/decisions/mcp-backend-wiring-discipline.md`.
-No Bodai-specific code is imported at runtime — integration is purely via
-shared conventions.
+Built on [Oneiric](https://github.com/lesleslie/oneiric) for runtime configuration
+and [mcp-common](https://github.com/lesleslie/mcp-common) for the FastMCP
+baseline. [Crackerjack](https://github.com/lesleslie/crackerjack) gates every commit.

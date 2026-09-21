@@ -23,7 +23,7 @@ Unofficial MCP server for SynXis PMS (Property Management System) API.
 
 ## Quality & CI
 
-Crackerjack is the standard quality-control and CI/CD gate for SynXis PMS MCP changes. Local verification should mirror the Crackerjack workflow used across the Bodai ecosystem.
+Crackerjack is the standard quality-control and CI/CD gate for SynXis PMS MCP changes.
 
 ______________________________________________________________________
 
@@ -218,3 +218,7 @@ uv run pytest tests/test_example.py -v
 - Keep examples and tests on mock mode or scrubbed fixtures.
 - Treat check-in, check-out, room assignment, and billing payloads as sensitive operational data.
 - Keep SynXis URLs, ports, and property settings configurable rather than hard-coded in new code.
+
+Built on [Oneiric](https://github.com/lesleslie/oneiric) for runtime configuration
+and [mcp-common](https://github.com/lesleslie/mcp-common) for the FastMCP
+baseline. [Crackerjack](https://github.com/lesleslie/crackerjack) gates every commit.

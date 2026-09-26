@@ -114,22 +114,6 @@ async def create_app(
 
         server = FastMCP(name=APP_NAME, version=APP_VERSION, lifespan=app_lifespan)
 
-    # Kubernetes-style health check endpoint (always at the module
-    # level — independent of the W0 tool profile dispatch).
-    #
-    # Registered OUTSIDE the ``if server is None:`` branch so callers
-    # who inject a pre-constructed ``FastMCP`` server still receive
-    # the /healthz route. Mirrors the placement of the /health route
-    # below. Production callers (CLI startup, __getattr__, get_app)
-    # never inject a server, so production behavior is unchanged;
-    # the M-1 fix protects future test/custom callers.
-    @server.custom_route("/healthz", methods=["GET"])
-    async def healthz_check(request: Any) -> Any:
-        """Kubernetes-style health check endpoint."""
-        from starlette.responses import JSONResponse
-
-        return JSONResponse({"status": "ok"})
-
     # Apply tool profile dispatch (SYNXIS_PMS_TOOL_PROFILE env var).
     #
     # Replaces the previous direct ``register_pms_tools(app, client)``

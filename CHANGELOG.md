@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.3] - 2026-09-26
+
+### Documentation
+
+- Add docs/assets/images/ + .scratch/ convention
+- Consolidate Bodai/Vishnu references to bottom section
+- Drop Bodai integration framing and add substrate note
+- Update FastMCP badge URL to PrefectHQ org (canonical since v3.0 GA)
+
+### Internal
+
+- deps: Bump mcp-common floor to >=0.26.0,<0.27.0 (Phase 2.5)
+- gitignore: Apply Bodai canonical snippet
+- plugin: Rebadge from Bodai + update install instructions
+- synxis-pms-mcp: Migrate to mcp-common 0.30.x APIs
+- synxis-pms-mcp: Refresh uv.lock for mcp-common 0.30.1
+
 ## [0.5.0] - 2026-08-28
 
 ### Documentation
